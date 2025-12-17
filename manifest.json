@@ -1,0 +1,16 @@
+{
+  "name": "Arbolín: La Venganza",
+  "short_name": "Arbolín",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "description": "Juego de supervivencia y recolección.",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/trees.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
