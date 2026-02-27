@@ -1,14 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GameState, LeaderboardEntry } from '../types';
-import { ArrowLeft, Trophy, Crown } from 'lucide-react';
+import { ArrowLeft, Trophy, Crown, RefreshCcw } from 'lucide-react';
 
 interface LeaderboardProps {
   setGameState: (state: GameState) => void;
-  leaderboard: LeaderboardEntry[];
 }
 
-export const Leaderboard: React.FC<LeaderboardProps> = ({ setGameState, leaderboard }) => {
-  // Sort descending
+export const Leaderboard: React.FC<LeaderboardProps> = ({ setGameState }) => {
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await fetch('/api/leaderboard');
+      const data = await res.json();
+      setLeaderboard(data);
+    } catch (err) {
+      console.error("Error fetching leaderboard", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaderboard();
+
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${protocol}//${window.location.host}`);
+    
+    socket.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'leaderboard') {
+        setLeaderboard(msg.data);
+      }
+    };
+
+    return () => socket.close();
+  }, []);
+
   const sorted = [...leaderboard].sort((a, b) => b.score - a.score).slice(0, 10);
 
   return (
@@ -21,7 +50,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ setGameState, leaderbo
           <ArrowLeft size={24} />
         </button>
         <h2 className="text-2xl font-bold uppercase tracking-wider text-yellow-500">Clasificación</h2>
-        <div className="w-12"></div>
+        <button 
+          onClick={fetchLeaderboard}
+          className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+        >
+          <RefreshCcw size={20} className={loading ? 'animate-spin' : ''} />
+        </button>
       </div>
 
       <div className="max-w-md mx-auto w-full bg-gray-800 rounded-3xl overflow-hidden border border-gray-700 shadow-2xl">

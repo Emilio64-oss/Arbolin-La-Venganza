@@ -2,9 +2,11 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 
 interface JoystickProps {
   onMove: (x: number, y: number) => void;
+  color?: string;
+  label?: string;
 }
 
-export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
+export const Joystick: React.FC<JoystickProps> = ({ onMove, color = '#fff', label }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -108,20 +110,22 @@ export const Joystick: React.FC<JoystickProps> = ({ onMove }) => {
   return (
     <div 
       ref={containerRef}
-      className="relative bg-white/5 rounded-full border-2 border-white/10 backdrop-blur-sm touch-none shadow-2xl"
+      className="relative bg-white/5 rounded-full border-2 border-white/10 backdrop-blur-sm touch-none shadow-2xl flex items-center justify-center"
       style={{ width: CONTAINER_SIZE, height: CONTAINER_SIZE }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseUp}
     >
+      {label && <span className="text-[10px] font-bold opacity-30 select-none pointer-events-none">{label}</span>}
       <div 
-        className={`absolute bg-white/80 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ${active ? 'scale-90 bg-green-200' : ''}`}
+        className={`absolute rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)] transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ${active ? 'scale-90' : ''}`}
         style={{ 
           width: KNOB_SIZE, 
           height: KNOB_SIZE,
           left: '50%', 
           top: '50%',
+          backgroundColor: active ? color : `${color}cc`,
           transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px))`
         }}
       />

@@ -7,12 +7,14 @@ interface LevelSelectorProps {
   setGameState: (state: GameState) => void;
   setSettings: React.Dispatch<React.SetStateAction<GameSettings>>;
   completedDifficulties: Difficulty[];
+  onStart?: () => void;
 }
 
-export const LevelSelector: React.FC<LevelSelectorProps> = ({ setGameState, setSettings, completedDifficulties }) => {
+export const LevelSelector: React.FC<LevelSelectorProps> = ({ setGameState, setSettings, completedDifficulties, onStart }) => {
   
   const startGame = (diff: Difficulty) => {
     setSettings(prev => ({ ...prev, difficulty: diff }));
+    if (onStart) onStart();
     setGameState(GameState.PLAYING);
   };
 
